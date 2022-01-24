@@ -10,7 +10,7 @@ namespace KVLS2_C1
     class ThemeColor
     {
 #if true
-        public static List<string> ColorList = new List<string>(){"#FF5800","#FFB800","#10C040" };
+        public static List<string> ColorList = new List<string>(){"#FF5800","#FFB800", "#10C040", "#808080" };
 
 #else
         public static List<string> ColorList = new List<string>(){

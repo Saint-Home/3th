@@ -7,24 +7,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Management;
 using System.Runtime.InteropServices;
+
+using System.Collections.Specialized;
+using OpenHardwareMonitor.Collections;
+using OpenHardwareMonitor.Hardware;
+
 
 namespace KVLS2_C1
 {
-    public partial class Form1 : Form
+
+    public partial class MainForm : Form
     {
         private Button currentButton;
         private Random random;
         private int tempIndex;
+        private Form activeForm;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             random = new Random();
-            
-            //this.Text = string.Empty;
-            //this.ControlBox = false;
+
+            this.Text = string.Empty;
+            this.ControlBox = false;
+            this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea;
+
         }
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]
         private extern static void ReleseCaputre();
@@ -42,7 +51,7 @@ namespace KVLS2_C1
             }
             tempIndex = index;
 #endif
-            string color = ThemeColor.ColorList[index];
+            string color = ThemeColor.ColorList[index - 1];
             return ColorTranslator.FromHtml(color);
         }
 
@@ -78,30 +87,43 @@ namespace KVLS2_C1
         }
 
 
+        private void OpenChildForm(Form childForm, object btnSender, int index)
+        {
+            if(activeForm != null)
+            {
+                activeForm.Close();
+            }
+            ActiveButton(btnSender, index);
+            activeForm = childForm;
+            childForm.TopLevel = false;
+            childForm.FormBorderStyle = FormBorderStyle.None;
+            childForm.Dock = DockStyle.Fill;
+            this.MainPanel.Controls.Add(childForm);
+            this.MainPanel.Tag = childForm;
+            childForm.BringToFront();
+            childForm.Show();
+            label2.Text = childForm.Text;
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+            this.Update();
+        }
+
 
         private void button1_Click(object sender, EventArgs e)
-        {
-            ActiveButton(sender,0);
+        { 
+            //ActiveButton(sender,0);
+           OpenChildForm(new forms.PBIT_form(), sender, 1);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            ActiveButton(sender,1);
+            //ActiveButton(sender,1);
+            OpenChildForm(new forms.IBIT_form(), sender, 2);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ActiveButton(sender,2);
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
-        {
-            
+            //ActiveButton(sender,2);
+            OpenChildForm(new forms.CBIT_form(), sender, 3);
         }
 
         private void panel3_MouseDown(object sender, MouseEventArgs e)
@@ -109,5 +131,22 @@ namespace KVLS2_C1
             ReleseCaputre();
             SendMessage(this.Handle, 0x112, 0xf012, 0);
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new forms.WMI_form(), sender, 4);
+        }
+#if false
+        private void Reset()
+        {
+            DisableButton();
+            lblTitle.Text = "HOME";
+            pnlTitleBar.BackColor = Color.FromArgb(108, 156, 196);
+            pnlLogo.BackColor = Color.SteelBlue;
+            currentButton = null;
+            btnCloseChildFrm.Visible = false;
+        }
+#endif
+
     }
 }
