@@ -30,7 +30,6 @@ namespace KVLS2_C1.forms
         private ColumnHeader columnHeader4;
         private Panel panel1;
         private ColumnHeader columnHeader5;
-
         ListViewItem Lvi1;
 
         private void InitializeComponent()
@@ -95,6 +94,7 @@ namespace KVLS2_C1.forms
             // 
             this.ClientSize = new System.Drawing.Size(1105, 512);
             this.Controls.Add(this.panel1);
+            this.Name = "PBIT_form";
             this.Text = "PBIT VIEW";
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -109,6 +109,7 @@ namespace KVLS2_C1.forms
             Thread worker = new Thread(pThread);
             worker.IsBackground = true;
             worker.Start();
+
         }
 
         private void View_Init()
@@ -141,18 +142,30 @@ namespace KVLS2_C1.forms
 #if true
                 string[] str = getComportList();
                 StringBuilder sb = new StringBuilder();
+                List<string> comport = new List<string>();
+
+                comport = GetSerialPorts();
+
+          
 
                 if (this.InvokeRequired)
                 {
                     this.Invoke(new MethodInvoker(delegate ()
                     {
+#if false
                         for (int i = 0; i < str.Length; i++)
                         {
                             sb.Append(str[i]);
                         }
 
                         Console.WriteLine(sb.ToString());
-
+#endif
+                        foreach (var port in comport)
+                        {
+                            Console.WriteLine(port);
+                        }
+                        listView1.Items.Clear();
+                        getComport_List();
                         CPU_InfoUpdate();
 
 
@@ -160,25 +173,42 @@ namespace KVLS2_C1.forms
                 }
                 else
                 {
+#if false
                     for (int i = 0; i < str.Length; i++)
                     {
                         sb.Append(str[i]);
                     }
 
                     Console.WriteLine(sb.ToString());
+#endif
+                    foreach (var port in comport)
+                    {
+                        Console.WriteLine(port);
+                    }
 
+
+                    getComport_List();
                     CPU_InfoUpdate();
 
                 }
                 Thread.Sleep(1000);
             }
 #endif
-        }
+                }
 
 
-        private void getComport_List(StringBuilder sb, int len)
+        private void getComport_List()
         {
 
+            List<string> comport = new List<string>();
+            comport = GetSerialPorts();
+
+            foreach (var item in comport)
+            {
+                listView1.Items.Add(new ListViewItem(item));
+                //listView1.Items[1].SubItems[3].Text = "-";
+            }
+            //new ListViewItem(item);
 #if false
             Lvi1 = new ListViewItem("COM", 0);
             Lvi1.SubItems.Add("-");
@@ -187,6 +217,20 @@ namespace KVLS2_C1.forms
             Lvi1.SubItems.Add("-");
             listView1.Items.Add(Lvi1);
 #endif
+        }
+
+        public List<string> GetSerialPorts()
+        {
+            List<string> portNames = new List<string>();
+            string[] port = System.IO.Ports.SerialPort.GetPortNames();
+
+            foreach (string portName in port)
+            {
+                portNames.Add(portName);
+            }
+
+            portNames.Sort();
+            return portNames;
         }
 
 
@@ -236,7 +280,7 @@ namespace KVLS2_C1.forms
 ;
             Console.WriteLine(sb.ToString());
 
-            getComport_List(sb, sb.Length);
+            //getComport_List(sb, sb.Length);
             Thread.Sleep(1000);
 
         }

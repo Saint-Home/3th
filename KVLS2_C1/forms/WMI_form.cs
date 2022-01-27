@@ -131,6 +131,10 @@ namespace KVLS2_C1.forms
             this.wmiComboBox.Items.Add("Win32_OperatingSystem");
             this.wmiComboBox.Items.Add("Win32_PnPDeviceProperty");
             this.wmiComboBox.Items.Add("Win32_PerfFormattedData_PerfOS_Processor");
+            this.wmiComboBox.Items.Add("Win32_SerialPort");
+            this.wmiComboBox.Items.Add("Win32_DesktopMonitor");
+            this.wmiComboBox.Items.Add("Win32_PnPEntity");
+
 
             this.wmiComboBox.SelectedIndex = 0;
         }

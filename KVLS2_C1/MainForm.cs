@@ -13,13 +13,17 @@ using System.Runtime.InteropServices;
 using System.Collections.Specialized;
 using OpenHardwareMonitor.Collections;
 using OpenHardwareMonitor.Hardware;
-
+using System.Threading;
 
 namespace KVLS2_C1
 {
 
     public partial class MainForm : Form
     {
+        public Thread worker1;
+        public Thread worker2;
+        public Thread worker3;
+
         private Button currentButton;
         private Random random;
         private int tempIndex;
@@ -36,7 +40,7 @@ namespace KVLS2_C1
 
         }
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]
-        private extern static void ReleseCaputre();
+        private extern static void ReleseCapture();
 
         [DllImport("user32.DLL", EntryPoint = "SendMessage")]
         private extern static void SendMessage(System.IntPtr hwnd, int wMsg, int wParam, int IParam);
@@ -92,6 +96,7 @@ namespace KVLS2_C1
             if(activeForm != null)
             {
                 activeForm.Close();
+                //activeForm.Dispose();
             }
             ActiveButton(btnSender, index);
             activeForm = childForm;
@@ -117,6 +122,7 @@ namespace KVLS2_C1
         private void button2_Click(object sender, EventArgs e)
         {
             //ActiveButton(sender,1);
+            
             OpenChildForm(new forms.IBIT_form(), sender, 2);
         }
 
@@ -124,11 +130,12 @@ namespace KVLS2_C1
         {
             //ActiveButton(sender,2);
             OpenChildForm(new forms.CBIT_form(), sender, 3);
+            
         }
 
         private void panel3_MouseDown(object sender, MouseEventArgs e)
         {
-            ReleseCaputre();
+            ReleseCapture();
             SendMessage(this.Handle, 0x112, 0xf012, 0);
         }
 
@@ -147,6 +154,18 @@ namespace KVLS2_C1
             btnCloseChildFrm.Visible = false;
         }
 #endif
+
+        private Form IsForm(Type FormType)
+        {
+            foreach (Form subform in Application.OpenForms)
+            {
+                if (subform.GetType() == FormType)
+                {
+                    return subform;
+                }
+            }
+            return null;
+        }
 
     }
 }
